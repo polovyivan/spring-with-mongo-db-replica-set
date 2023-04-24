@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  ngnx:
+    image: nginx:1.24.0
+    volumes:
+      - ./nginx:/etc/nginx/conf.d
+    ports:
+      - "8080:80"
+    environment:
+      - NGINX_PORT=80
+    networks:
+      - mongo-cluster-network
+
+  temp-instance:
+    container_name: temp-instance
+    image: mongo:5.0.5
+    volumes:
+      - ./init-mongo-db:/docker-entrypoint-initdb.d
+    networks:
+      - mongo-cluster-network
+
+  primary:
+    container_name: primary
+    image: mongo:5.0.5
+    volumes:
+      - ./keys/mongo-replica-set.key:/data/db/mongo-replica-set.key
+    ports:
+      - "27017:27017"
+    environment:
+          - MONGO_INITDB_ROOT_USERNAME=root
+          - MONGO_INITDB_ROOT_PASSWORD=root
+          - MONGO_INITDB_DATABASE=customer
+    networks:
+      - mongo-cluster-network
+    command:
+      - "--replSet"
+      - "tutorial-cluster"
+      - "--keyFile"
+      - "/data/db/mongo-replica-set.key"
+
+  replica01:
+    container_name: replica01
+    image: mongo:5.0.5
+    volumes:
+      - ./keys/mongo-replica-set.key:/data/db/mongo-replica-set.key
+    ports:
+      - "27027:27017"
+    networks:
+      - mongo-cluster-network
+    command:
+      - "--replSet"
+      - "tutorial-cluster"
+      - "--keyFile"
+      - "/data/db/mongo-replica-set.key"
+
+  replica02:
+    container_name: replica02
+    image: mongo:5.0.5
+    volumes:
+      - ./keys/mongo-replica-set.key:/data/db/mongo-replica-set.key
+    ports:
+      - "27037:27017"
+    networks:
+      - mongo-cluster-network
+    command:
+      - "--replSet"
+      - "tutorial-cluster"
+      - "--keyFile"
+      - "/data/db/mongo-replica-set.key"
+
+networks:
+  mongo-cluster-network:
