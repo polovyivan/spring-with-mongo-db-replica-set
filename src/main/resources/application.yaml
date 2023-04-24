@@ -3,22 +3,19 @@ server:
   servlet:
     context-path: /spring-aws-document-db
 
-#spring:
-#  data:
-#    mongodb:
-#      uri: "mongodb://root:root@localhost:27017/customer?authSource=admin&replicaSet=tutorial-cluster&readPreference=secondary"
-
-
-
-
 spring:
   data:
     mongodb:
-      host: "localhost"
-      port: 27017
-      database: "customer"
-      username: "root"
-      password: "root"
-      authentication-database: admin
-      replica-set-name: tutorial-cluster
+      uri: "mongodb://root:root@primary:27017,replica01:27017,replica02:27017/customer?authSource=admin&replicaSet=tutorial-cluster&readPreference=secondary"
+
+#spring:
+#  data:
+#    mongodb:
+ #     host: "localhost"
+#      port: 27017
+#      database: "customer"
+#      username: "root"
+#      password: "root"
+#      authentication-database: admin
+#      replica-set-name: tutorial-cluster
   #

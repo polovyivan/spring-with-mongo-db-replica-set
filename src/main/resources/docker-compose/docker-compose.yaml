@@ -1,16 +1,6 @@
 version: "3.8"
 
 services:
-  ngnx:
-    image: nginx:1.24.0
-    volumes:
-      - ./nginx:/etc/nginx/conf.d
-    ports:
-      - "8080:80"
-    environment:
-      - NGINX_PORT=80
-    networks:
-      - mongo-cluster-network
 
   temp-instance:
     container_name: temp-instance
@@ -32,7 +22,8 @@ services:
           - MONGO_INITDB_ROOT_PASSWORD=root
           - MONGO_INITDB_DATABASE=customer
     networks:
-      - mongo-cluster-network
+      mongo-cluster-network:
+          ipv4_address: 172.16.238.10
     command:
       - "--replSet"
       - "tutorial-cluster"
@@ -47,7 +38,8 @@ services:
     ports:
       - "27027:27017"
     networks:
-      - mongo-cluster-network
+      mongo-cluster-network:
+        ipv4_address: 172.16.238.11
     command:
       - "--replSet"
       - "tutorial-cluster"
@@ -62,7 +54,8 @@ services:
     ports:
       - "27037:27017"
     networks:
-      - mongo-cluster-network
+      mongo-cluster-network:
+        ipv4_address: 172.16.238.12
     command:
       - "--replSet"
       - "tutorial-cluster"
@@ -71,3 +64,7 @@ services:
 
 networks:
   mongo-cluster-network:
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
