@@ -5,14 +5,13 @@ import com.polovyi.ivan.tutorials.dto.CustomerResponse;
 import com.polovyi.ivan.tutorials.entity.CustomerEntity;
 import com.polovyi.ivan.tutorials.repository.CustomerRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.Spliterator;
 import java.util.Spliterators;
-import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -20,9 +19,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CustomerService {
 
-   private final CustomerRepository customerRepository;
-
-    //private final MongoTemplate mongoTemplate;
+    private final CustomerRepository customerRepository;
 
     public List<CustomerResponse> getAllCustomers() {
         log.info("Getting all customers...");
@@ -34,12 +31,19 @@ public class CustomerService {
     public void createCustomer(CustomerRequest customerRequest) {
         log.info("Creating customer...");
         customerRepository.save(CustomerEntity.builder()
-                .id(UUID.randomUUID().toString())
                 .phoneNumber(customerRequest.getPhoneNumber())
                 .fullName(customerRequest.getFullName())
                 .address(customerRequest.getAddress())
                 .createdAt(customerRequest.getCreatedAt())
                 .build());
+    }
+
+    public CustomerResponse getCustomer(String id) {
+        log.info("Getting customer by id {}...", id);
+        Optional<CustomerEntity> byId = customerRepository.findById(id);
+        return byId
+                .map(CustomerResponse::valueOf)
+                .orElse(null);
     }
 }
 

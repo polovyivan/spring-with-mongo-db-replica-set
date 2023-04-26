@@ -20,7 +20,6 @@ services:
     environment:
           - MONGO_INITDB_ROOT_USERNAME=root
           - MONGO_INITDB_ROOT_PASSWORD=root
-          - MONGO_INITDB_DATABASE=customer
     networks:
       mongo-cluster-network:
           ipv4_address: 172.16.238.10
@@ -29,6 +28,8 @@ services:
       - "tutorial-cluster"
       - "--keyFile"
       - "/data/db/mongo-replica-set.key"
+      - "--profile=1"
+      - "--slowms=1"
 
   replica01:
     container_name: replica01
@@ -45,6 +46,8 @@ services:
       - "tutorial-cluster"
       - "--keyFile"
       - "/data/db/mongo-replica-set.key"
+      - "--profile=1"
+      - "--slowms=1"
 
   replica02:
     container_name: replica02
@@ -61,6 +64,8 @@ services:
       - "tutorial-cluster"
       - "--keyFile"
       - "/data/db/mongo-replica-set.key"
+      - "--profile=1"
+      - "--slowms=1"
 
 networks:
   mongo-cluster-network:
