@@ -1,7 +1,11 @@
 #!/bin/bash
 
+PRIMARY_INSTANCE_IP=172.16.238.10
+SECONDARY_01_INSTANCE_IP=172.16.238.11
+SECONDARY_02_INSTANCE_IP=172.16.238.12
+
 echo "########### Waiting for primary ###########"
-until mongo --host primary  --eval "printjson(db.runCommand({ serverStatus: 1}).ok)"
+until mongo --host ${PRIMARY_INSTANCE_IP}  --eval "printjson(db.runCommand({ serverStatus: 1}).ok)"
   do
     echo "########### Sleeping  ###########"
     sleep 5
@@ -9,7 +13,7 @@ until mongo --host primary  --eval "printjson(db.runCommand({ serverStatus: 1}).
 
 
 echo "########### Waiting for replica 01  ###########"
-until mongo --host replica01 --eval "printjson(db.runCommand({ serverStatus: 1}).ok)"
+until mongo --host ${SECONDARY_01_INSTANCE_IP} --eval "printjson(db.runCommand({ serverStatus: 1}).ok)"
   do
     echo "########### Sleeping  ###########"
     sleep 5
@@ -17,7 +21,7 @@ until mongo --host replica01 --eval "printjson(db.runCommand({ serverStatus: 1})
 
 
 echo "########### Waiting for replica 02  ###########"
-until mongo --host replica02 --eval "printjson(db.runCommand({ serverStatus: 1}).ok)"
+until mongo --host ${SECONDARY_02_INSTANCE_IP} --eval "printjson(db.runCommand({ serverStatus: 1}).ok)"
   do
     echo "########### Sleeping  ###########"
     sleep 5
@@ -28,26 +32,26 @@ echo "########### All replicas are ready!!!  ###########"
 echo "########### Setting up cluster config  ###########"
 
 echo "########### Getting replica set status  ###########"
-mongosh --host primary -u root -p root <<EOF
+mongosh --host ${PRIMARY_INSTANCE_IP} -u root -p root <<EOF
 rs.status()
 EOF
 echo "########### Initiating replica set ###########"
-mongosh --host primary -u root -p root  <<EOF
+mongosh --host ${PRIMARY_INSTANCE_IP} -u root -p root  <<EOF
 rs.initiate(
    {
       _id: "tutorial-cluster",
       version: 1,
       members: [
-         { _id: 0, host : "primary:27017" },
-         { _id: 1, host : "replica01:27017" },
-         { _id: 2, host : "replica02:27017" }
+         { _id: 0, host : "${PRIMARY_INSTANCE_IP}:27017" },
+         { _id: 1, host : "${SECONDARY_01_INSTANCE_IP}:27017" },
+         { _id: 2, host : "${SECONDARY_02_INSTANCE_IP}:27017" }
       ]
    }
 )
 EOF
 
 echo "########### Getting replica set status again  ###########"
-mongosh --host primary -u root -p root   <<EOF
+mongosh --host ${PRIMARY_INSTANCE_IP} -u root -p root   <<EOF
 rs.status()
 EOF
 

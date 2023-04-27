@@ -6,7 +6,7 @@ server:
 spring:
   data:
     mongodb:
-      uri: "mongodb://root:root@primary:27017,replica01:27017,replica02:27017/tutorial-db?authSource=admin&replicaSet=tutorial-cluster&readPreference=secondary"
+      uri: "mongodb://root:root@172.16.238.10:27017,172.16.238.11:27017,172.16.238.12:27017/tutorial-db?authSource=admin&replicaSet=tutorial-cluster&readPreference=secondary"
 
 logging:
   level:
